@@ -10,14 +10,14 @@ import org.scalatest.matchers.should.Matchers
 import scala.concurrent.Future
 
 class FutureEitherExtensionsSpecs extends AsyncFlatSpec with Matchers {
-  object MockedScope {
+  class MockedScope {
     def mapper(param: String): Future[Either[String, String]] = Future.successful(Right(s"${param}2"))
   }
 
   "RichFutureEither" should "map Right" in {
     def futureOfRight: Future[Either[String, String]] = Future.successful(Right("Happy"))
 
-    val spy = Mockito.spy(MockedScope)
+    val spy = Mockito.spy(new MockedScope)
     futureOfRight.dumap(spy.mapper) map { r =>
       verify(spy).mapper("Happy")
       r shouldBe Right("Happy2")
@@ -27,7 +27,7 @@ class FutureEitherExtensionsSpecs extends AsyncFlatSpec with Matchers {
   it should "not call the mapper for a Left" in {
     def futureOfLeft: Future[Either[String, String]] = Future.successful(Left("Sad"))
 
-    val spy = Mockito.spy(MockedScope)
+    val spy = Mockito.spy(new MockedScope)
     futureOfLeft.dumap(spy.mapper) map { l =>
       verify(spy, times(0)).mapper(any[String])
       l shouldBe Left("Sad")

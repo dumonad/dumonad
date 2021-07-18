@@ -10,14 +10,14 @@ import org.scalatest.matchers.should.Matchers
 import scala.concurrent.Future
 
 class FutureOptionExtensionsSpecs extends AsyncFlatSpec with Matchers {
-  object MockedScope {
+  class MockedScope {
     def mapper(param: String): Future[Option[String]] = Future.successful(Some(s"${param}2"))
   }
 
   "RichFutureOption" should "map Some" in {
     def futureOfSome: Future[Option[String]] = Future.successful(Some("Happy"))
 
-    val spy = Mockito.spy(MockedScope)
+    val spy = Mockito.spy(new MockedScope)
     futureOfSome.dumap(spy.mapper) map { r =>
       verify(spy).mapper("Happy")
       r shouldBe Some("Happy2")
@@ -27,7 +27,7 @@ class FutureOptionExtensionsSpecs extends AsyncFlatSpec with Matchers {
   it should "not call the mapper for a None" in {
     def futureOfNone: Future[Option[String]] = Future.successful(None)
 
-    val spy = Mockito.spy(MockedScope)
+    val spy = Mockito.spy(new MockedScope)
     futureOfNone.dumap(spy.mapper) map { l =>
       verify(spy, times(0)).mapper(any[String])
       l shouldBe None
