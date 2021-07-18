@@ -8,6 +8,7 @@ name := "dummonad"
 version := "0.1"
 
 ThisBuild / scalaVersion := scala3
+ThisBuild / crossScalaVersions := supportedScalaVersions
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
 libraryDependencies += "org.scalatestplus" %% "mockito-3-4" % "3.2.9.0" % "test"
