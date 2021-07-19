@@ -1,8 +1,8 @@
-package com.github.dumonad.dumonad
+package io.github.dumonad.dumonad
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.dumonad.dumonad.Implicits._
+import Implicits._
 
 class Main {
   def main(args: Array[String]): Unit = {

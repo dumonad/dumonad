@@ -4,8 +4,8 @@ lazy val scala3 = "3.0.0"
 lazy val supportedScalaVersions = List(scala212, scala213, scala3)
 
 name := "dummonad"
-
 version := "0.1"
+organization := "io.github.dumonad"
 
 ThisBuild / scalaVersion := scala3
 ThisBuild / crossScalaVersions := supportedScalaVersions

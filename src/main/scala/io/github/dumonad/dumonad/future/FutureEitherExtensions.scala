@@ -1,4 +1,4 @@
-package com.github.dumonad.dumonad.future
+package io.github.dumonad.dumonad.future
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,6 +1,6 @@
-package com.github.dumonad.dumonad.future
+package io.github.dumonad.dumonad.future
 
-import com.github.dumonad.dumonad.Implicits.{RichOptionFuture, RichFutureOption}
+import io.github.dumonad.dumonad.Implicits.{RichOptionFuture, RichFutureOption}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
