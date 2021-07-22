@@ -53,3 +53,18 @@ val optionOfFuture: Option[Future[String]]
 
 val futureOfOption: Future[Option[String]] = optionOfFuture.dummed
 ```
+
+## Getting started
+
+_supported scala versions : 2.12, 2.13, and 3.0_
+
+Add the dependency in build.sbt
+```scala
+libraryDependencies += "io.github.dumonad" %% "dummonad" % "0.1"
+```
+It's all set!
+```scala
+import io.github.dumonad.dumonad.Implicits._
+
+validate(customer).dumap(persist).dumap(notifyAdmin)
+```

@@ -1,6 +1,6 @@
 package io.github.dumonad.dumonad.future
 
-import io.github.dumonad.dumonad.Implicits.{RichEitherFuture, RichFutureEither}
+import io.github.dumonad.dumonad.Implicits._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
