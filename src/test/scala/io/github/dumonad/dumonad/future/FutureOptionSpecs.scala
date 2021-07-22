@@ -9,13 +9,44 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Future
 
-class FutureOptionExtensionsSpecs extends AsyncFlatSpec with Matchers {
+class FutureOptionSpecs extends AsyncFlatSpec with Matchers {
+
+  def futureOfSome: Future[Option[String]] = Future.successful(Some("Happy"))
+
+  def futureOfNone: Future[Option[String]] = Future.successful(None)
+
   class MockedScope {
     def mapper(param: String): Future[Option[String]] = Future.successful(Some(s"${param}2"))
   }
 
+  "FutureOption" should "act well in a for-comprehension" in {
+    val spy = Mockito.spy(new MockedScope)
+
+    val comprehensionResult = for {
+      some <- futureOfSome.toFutureOption
+      callResult <- spy.mapper(some).toFutureOption
+    } yield callResult
+
+    comprehensionResult.value.map { r =>
+      verify(spy).mapper("Happy")
+      r shouldBe Some("Happy2")
+    }
+  }
+  it should "not cal call mapper for none for-comprehension" in {
+    val spy = Mockito.spy(new MockedScope)
+
+    val comprehensionResult = for {
+      some <- futureOfNone.toFutureOption
+      callResult <- spy.mapper(some).toFutureOption
+    } yield callResult
+
+    comprehensionResult.value.map { r =>
+      verify(spy,times(0)).mapper(any[String])
+      r shouldBe None
+    }
+  }
+
   "RichFutureOption" should "map Some" in {
-    def futureOfSome: Future[Option[String]] = Future.successful(Some("Happy"))
 
     val spy = Mockito.spy(new MockedScope)
     futureOfSome.dumap(spy.mapper) map { r =>
@@ -25,8 +56,6 @@ class FutureOptionExtensionsSpecs extends AsyncFlatSpec with Matchers {
   }
 
   it should "not call the mapper for a None" in {
-    def futureOfNone: Future[Option[String]] = Future.successful(None)
-
     val spy = Mockito.spy(new MockedScope)
     futureOfNone.dumap(spy.mapper) map { l =>
       verify(spy, times(0)).mapper(any[String])
