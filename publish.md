@@ -17,7 +17,7 @@ $ gpg --keyserver https://keys.openpgp.org --send-keys THEKEYTHATYOUSIGNEDTHEJAR
 
 publish on staging:
 ```shell
-$ sbt publishSigned
+$ sbt + publishSigned
 ```
 release to public
 ```shell
