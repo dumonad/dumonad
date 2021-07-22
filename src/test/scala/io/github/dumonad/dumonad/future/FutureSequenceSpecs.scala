@@ -9,18 +9,35 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Future
 
-class FutureSequenceExtensionsSpecs extends AsyncFlatSpec with Matchers {
+class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
   class MockedScope {
-    def mapper(param: String): Future[Seq[String]] = Future.successful(Seq(s"${param}2"))
+    def mapper(param: String): Future[Seq[String]] = Future.successful(Seq(s"${param}1", s"${param}2"))
   }
 
+  def futureOfSeq: Future[Seq[String]] = Future.successful(Seq("Happy", "thrilled"))
+
+
+  "FutureSequence" should "act well in a for-comprehension" in {
+    val spy = Mockito.spy(new MockedScope)
+
+    val comprehensionResult = for {
+      some <- futureOfSeq.toFutureSequence
+      callResult <- spy.mapper(some).toFutureSequence
+    } yield callResult
+
+    comprehensionResult.value.map { r =>
+      verify(spy).mapper("Happy")
+      r shouldBe Seq("Happy1", "Happy2", "thrilled1", "thrilled2")
+    }
+  }
+
+
   "RichFutureSeq" should "map Seq" in {
-    def futureOfSeq: Future[Seq[String]] = Future.successful(Seq("Happy"))
 
     val spy = Mockito.spy(new MockedScope)
     futureOfSeq.dumap(spy.mapper) map { r =>
       verify(spy).mapper("Happy")
-      r shouldBe Seq("Happy2")
+      r shouldBe Seq("Happy1", "Happy2", "thrilled1", "thrilled2")
     }
   }
 
