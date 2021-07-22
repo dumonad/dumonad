@@ -54,15 +54,37 @@ val optionOfFuture: Option[Future[String]]
 val futureOfOption: Future[Option[String]] = optionOfFuture.dummed
 ```
 
+### for-comprehension
+
+Beside extension methods, Dumonad also represents a set of wrapper classes for nested types(`FutureOption`
+,`FutureEither`,...)
+
+To wrap the base model you can use `apply` method or related extension method:
+
+```scala
+import io.github.dumonad.dumonad.future.FutureOption
+
+val maybeCustomer: Future[Either[String, Customer]] 
+def persistCustomer(customer: Customer): Future[Either[String, PersistResult]]
+for {
+  customer <- maybeCustomer.toFutureOption
+  //or   customer <- FutureOption(maybeCustomer)
+  persistResult <- persistCustomer(customer)
+} yield persistResult
+```
+
 ## Getting started
 
 _supported scala versions : 2.12, 2.13, and 3.0_
 
 Add the dependency in build.sbt
+
 ```scala
 libraryDependencies += "io.github.dumonad" %% "dummonad" % "0.1"
 ```
+
 It's all set!
+
 ```scala
 import io.github.dumonad.dumonad.Implicits._
 
