@@ -62,13 +62,13 @@ Beside extension methods, Dumonad also represents a set of wrapper classes for n
 To wrap the base model you can use `apply` method or related extension method:
 
 ```scala
-import io.github.dumonad.dumonad.future.FutureOption
+import io.github.dumonad.dumonad.future.FutureEither
 
 val maybeCustomer: Future[Either[String, Customer]] 
 def persistCustomer(customer: Customer): Future[Either[String, PersistResult]]
 for {
-  customer <- maybeCustomer.toFutureOption
-  //or   customer <- FutureOption(maybeCustomer)
+  customer <- maybeCustomer.toFutureEither
+  //or   customer <- FutureEither(maybeCustomer)
   persistResult <- persistCustomer(customer)
 } yield persistResult
 ```
