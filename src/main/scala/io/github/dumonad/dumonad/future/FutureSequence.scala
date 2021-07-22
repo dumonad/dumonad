@@ -17,7 +17,7 @@ case class FutureSequence[T](value: Future[Iterable[T]]) {
     FutureSequence(value.map(_.map(mapper)))
 
 
-  def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext) {
+  def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext): Unit = {
     value.onComplete(_.foreach(_.foreach(mapper)))
   }
 }

@@ -22,7 +22,7 @@ case class FutureOption[T](value: Future[Option[T]]) {
   def map[T1](mapper: T => T1)(implicit executor: ExecutionContext): FutureOption[T1] =
     FutureOption(value.map(_.map(mapper)))
 
-  def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext) {
+  def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext): Unit = {
     value.onComplete(_.foreach(_.foreach(mapper)))
   }
 }

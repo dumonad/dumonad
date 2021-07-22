@@ -23,7 +23,7 @@ case class FutureEither[L, R](value: Future[Either[L, R]]) {
     FutureEither(value.map(_.map(mapper)))
 
 
-  def foreach[R1](mapper: R => R1)(implicit executor: ExecutionContext) {
+  def foreach[R1](mapper: R => R1)(implicit executor: ExecutionContext): Unit = {
     value.onComplete(_.foreach(_.foreach(mapper)))
   }
 }
