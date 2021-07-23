@@ -6,7 +6,7 @@ lazy val supportedScalaVersions = List(scala212, scala213, scala3)
 crossScalaVersions := supportedScalaVersions
 
 name := "dummonad"
-version := "0.2"
+version := "0.3"
 organization := "io.github.dumonad"
 
 homepage := Some(url("https://dumonad.github.io/"))

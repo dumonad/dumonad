@@ -1,6 +1,7 @@
 package io.github.dumonad.dumonad.future
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.{ClassTag, classTag}
 
 case class FutureSequence[T](value: Future[Iterable[T]]) {
 
@@ -22,6 +23,13 @@ case class FutureSequence[T](value: Future[Iterable[T]]) {
   }
 }
 
+object FutureSequence {
+  def apply[T: ClassTag](e: Iterable[T]): FutureSequence[T] = {
+    require(!classTag[T].equals(classTag[Future[_]]), "You are trying to generate Future[Iterable[Future[T]] which increases the complexity. Use `dummed` method instead")
+    this (Future.successful(e))
+  }
+}
+
 
 trait FutureSequenceExtensions {
   implicit class RichFutureSequence[T](extendee: Future[Iterable[T]]) {
@@ -35,5 +43,9 @@ trait FutureSequenceExtensions {
   implicit class RichSequenceFuture[T](extendee: Iterable[Future[T]]) {
     def dummed(implicit executor: ExecutionContext): Future[Iterable[T]] =
       Future.sequence(extendee)
+  }
+
+  implicit class RichSequence[T: ClassTag](extendee: Iterable[T]) {
+    def toFutureSequence: FutureSequence[T] = FutureSequence(extendee)
   }
 }

@@ -80,7 +80,7 @@ _supported scala versions : 2.12, 2.13, and 3.0_
 Add the dependency in build.sbt
 
 ```scala
-libraryDependencies += "io.github.dumonad" %% "dummonad" % "0.1"
+libraryDependencies += "io.github.dumonad" %% "dumonad" % "0.1"
 ```
 
 It's all set!

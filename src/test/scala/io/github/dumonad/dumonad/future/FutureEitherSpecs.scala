@@ -10,8 +10,12 @@ import org.scalatest.matchers.should.Matchers
 import scala.concurrent.Future
 
 class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
-  def futureOfRight: Future[Either[String, String]] = Future.successful(Right("Happy"))
-  def futureOfLeft: Future[Either[String, String]] = Future.successful(Left("Sad"))
+
+  private val right: Either[String, String] = Right("Happy")
+  private val left: Either[String, String] = Left("Sad")
+
+  def futureOfRight: Future[Either[String, String]] = Future.successful(right)
+  def futureOfLeft: Future[Either[String, String]] = Future.successful(left)
 
   class MockedScope {
     def mapper(param: String): Future[Either[String, String]] = Future.successful(Right(s"${param}2"))
@@ -39,9 +43,9 @@ class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
       callResult <- spy.mapper(right).toFutureEither
     } yield callResult
 
-    comprehensionResult.value.map { r =>
-      verify(spy,times(0)).mapper(any[String])
-      r shouldBe Left("Sad")
+    comprehensionResult.value.map { e =>
+      verify(spy, times(0)).mapper(any[String])
+      e shouldBe left
     }
   }
 
@@ -57,16 +61,25 @@ class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
     val spy = Mockito.spy(new MockedScope)
     futureOfLeft.dumap(spy.mapper) map { l =>
       verify(spy, times(0)).mapper(any[String])
-      l shouldBe Left("Sad")
+      l shouldBe left
     }
   }
 
   "RichEitherFuture" should "convert a Right[Future] to Future[Right]" in {
-    Right(Future.successful("Happy")).dummed.map(_ shouldBe Right("Happy"))
+    Right(Future.successful("Happy")).dummed.map(_ shouldBe right)
   }
 
   it should "convert a Left[Future] to Future[Left]" in {
-    Left("Sad").dummed.map(_ shouldBe Left("Sad"))
+    Left[String, Future[String]]("Sad").dummed.map(_ shouldBe left)
+  }
+
+  "RichEither" should "convert an either to FutureEither" in {
+    right.toFutureEither.value.map(_ shouldBe right)
+  }
+  it should "generate error to wrap a Either[Future] with Future" in {
+    intercept[Exception] {
+      Right[String, Future[String]](Future.successful("Sad")).toFutureEither.value.map(_ shouldBe right)
+    }.getMessage shouldBe "requirement failed: You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `dummed` method instead"
   }
 
 }

@@ -1,6 +1,7 @@
 package io.github.dumonad.dumonad.future
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.{ClassTag, classTag}
 
 case class FutureOption[T](value: Future[Option[T]]) {
 
@@ -27,6 +28,13 @@ case class FutureOption[T](value: Future[Option[T]]) {
   }
 }
 
+object FutureOption {
+  def apply[T:ClassTag](e: Option[T]): FutureOption[T] = {
+    require(!classTag[T].equals(classTag[Future[_]]), "You are trying to generate Future[Option[Future[T]] which increases the complexity. Use `dummed` method instead")
+    this (Future.successful(e))
+  }
+}
+
 
 trait FutureOptionExtensions {
   implicit class RichFutureOption[T](extendee: Future[Option[T]]) {
@@ -43,5 +51,9 @@ trait FutureOptionExtensions {
         case Some(r) => r.map(Some(_))
         case _ => Future.successful(None)
       }
+  }
+
+  implicit class RichOption[T:ClassTag](extendee: Option[T]) {
+    def toFutureOption: FutureOption[T] = FutureOption(extendee)
   }
 }
