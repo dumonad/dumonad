@@ -41,9 +41,25 @@ class FutureOptionSpecs extends AsyncFlatSpec with Matchers {
     } yield callResult
 
     comprehensionResult.value.map { r =>
-      verify(spy,times(0)).mapper(any[String])
+      verify(spy, times(0)).mapper(any[String])
       r shouldBe None
     }
+  }
+
+  it should "support if in for-comprehension" in {
+    val spy = Mockito.spy(new MockedScope)
+
+    val comprehensionResult = for {
+      some <- futureOfSome.toFutureOption
+      if some.isEmpty
+      callResult <- spy.mapper(some).toFutureOption
+    } yield callResult
+
+    comprehensionResult.value.map { r =>
+      verify(spy, times(0)).mapper(any[String])
+      r shouldBe None
+    }
+
   }
 
   "RichFutureOption" should "map Some" in {

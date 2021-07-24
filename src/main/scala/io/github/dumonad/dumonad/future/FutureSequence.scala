@@ -21,6 +21,13 @@ case class FutureSequence[T](value: Future[Iterable[T]]) {
   def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext): Unit = {
     value.onComplete(_.foreach(_.foreach(mapper)))
   }
+
+  def filter(p: T => Boolean)(implicit executor: ExecutionContext): FutureSequence[T] = {
+    FutureSequence(value.map(_.filter(p)))
+  }
+
+  def withFilter(p: T => Boolean)(implicit executor: ExecutionContext): FutureSequence[T] = filter(p)
+
 }
 
 object FutureSequence {

@@ -14,20 +14,37 @@ class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
     def mapper(param: String): Future[Seq[String]] = Future.successful(Seq(s"${param}1", s"${param}2"))
   }
 
-  def futureOfSeq: Future[Seq[String]] = Future.successful(Seq("Happy", "thrilled"))
+  def futureOfSeq: Future[Seq[String]] = Future.successful(Seq("Happy", "Thrilled"))
 
 
   "FutureSequence" should "act well in a for-comprehension" in {
     val spy = Mockito.spy(new MockedScope)
 
     val comprehensionResult = for {
-      some <- futureOfSeq.toFutureSequence
-      callResult <- spy.mapper(some).toFutureSequence
+      mood <- futureOfSeq.toFutureSequence
+      callResult <- spy.mapper(mood).toFutureSequence
     } yield callResult
 
     comprehensionResult.value.map { r =>
       verify(spy).mapper("Happy")
-      r shouldBe Seq("Happy1", "Happy2", "thrilled1", "thrilled2")
+      verify(spy).mapper("Thrilled")
+      r shouldBe Seq("Happy1", "Happy2", "Thrilled1", "Thrilled2")
+    }
+  }
+
+  "FutureSequence" should "support if in a for-comprehension" in {
+    val spy = Mockito.spy(new MockedScope)
+
+    val comprehensionResult = for {
+      mood <- futureOfSeq.toFutureSequence
+      if mood.equals("Happy")
+      callResult <- spy.mapper(mood).toFutureSequence
+    } yield callResult
+
+    comprehensionResult.value.map { r =>
+      verify(spy).mapper("Happy")
+      verify(spy,times(0)).mapper("Thrilled")
+      r shouldBe Seq("Happy1", "Happy2")
     }
   }
 
@@ -37,7 +54,7 @@ class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
     val spy = Mockito.spy(new MockedScope)
     futureOfSeq.dumap(spy.mapper) map { r =>
       verify(spy).mapper("Happy")
-      r shouldBe Seq("Happy1", "Happy2", "thrilled1", "thrilled2")
+      r shouldBe Seq("Happy1", "Happy2", "Thrilled1", "Thrilled2")
     }
   }
 
