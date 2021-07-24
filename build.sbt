@@ -6,7 +6,7 @@ lazy val supportedScalaVersions = List(scala212, scala213, scala3)
 crossScalaVersions := supportedScalaVersions
 
 name := "dummonad"
-version := "0.3"
+version := "0.4"
 organization := "io.github.dumonad"
 
 homepage := Some(url("https://dumonad.github.io/"))
@@ -15,20 +15,16 @@ developers := List(Developer("mohsenkashi", "Mohsen", "mhmhkashi@gmail.com", url
 licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 publishMavenStyle := true
 
-publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else {
-//    Opts.resolver.sonatypeStaging
-    MavenRepository(
-      "sonatype-staging",
-      "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
-    )
-  }
-)
-
 sonatypeCredentialHost := "s01.oss.sonatype.org"
 sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
+
+publishTo := {
+  val nexus = "https://s01.oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
 
 
 libraryDependencies ++= Seq(

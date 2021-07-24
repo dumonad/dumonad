@@ -21,11 +21,18 @@ case class FutureSequence[T](value: Future[Iterable[T]]) {
   def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext): Unit = {
     value.onComplete(_.foreach(_.foreach(mapper)))
   }
+
+  def filter(p: T => Boolean)(implicit executor: ExecutionContext): FutureSequence[T] = {
+    FutureSequence(value.map(_.filter(p)))
+  }
+
+  def withFilter(p: T => Boolean)(implicit executor: ExecutionContext): FutureSequence[T] = filter(p)
+
 }
 
 object FutureSequence {
   def apply[T: ClassTag](e: Iterable[T]): FutureSequence[T] = {
-    require(!classTag[T].equals(classTag[Future[_]]), "You are trying to generate Future[Iterable[Future[T]] which increases the complexity. Use `dummed` method instead")
+    require(!classTag[T].equals(classTag[Future[_]]), "You are trying to generate Future[Iterable[Future[T]] which increases the complexity. Use `extractFuture` method instead")
     this (Future.successful(e))
   }
 }
@@ -41,7 +48,7 @@ trait FutureSequenceExtensions {
   }
 
   implicit class RichSequenceFuture[T](extendee: Iterable[Future[T]]) {
-    def dummed(implicit executor: ExecutionContext): Future[Iterable[T]] =
+    def extractFuture(implicit executor: ExecutionContext): Future[Iterable[T]] =
       Future.sequence(extendee)
   }
 

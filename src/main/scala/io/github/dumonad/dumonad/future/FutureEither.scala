@@ -43,7 +43,7 @@ case class FutureEither[L, R](value: Future[Either[L, R]]) {
 
 object FutureEither {
   def apply[L, R:ClassTag](e: Either[L, R]): FutureEither[L, R] = {
-    require(!classTag[R].equals(classTag[Future[_]]), "You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `dummed` method instead")
+    require(!classTag[R].equals(classTag[Future[_]]), "You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `extractFuture` method instead")
     this (Future.successful(e))
   }
 }
@@ -57,7 +57,7 @@ trait FutureEitherExtensions {
   }
 
   implicit class RichEitherFuture[L, R](extendee: Either[L, Future[R]]) {
-    def dummed(implicit executor: ExecutionContext): Future[Either[L, R]] =
+    def extractFuture(implicit executor: ExecutionContext): Future[Either[L, R]] =
       extendee match {
         case Right(r) => r.map(Right(_))
         case Left(l) => Future.successful(Left(l))

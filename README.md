@@ -45,13 +45,13 @@ val futureOfOption: Future[Option[String]] = optionOfFuture match {
 }
 ```
 
-With `dummed` method it will be a piece of cake, because **in Dumonad `Future` is always the outer wrapper.**
+With `extractFuture` method it will be a piece of cake, because **in Dumonad `Future` is always the outer wrapper.**
 
 ```scala
 
 val optionOfFuture: Option[Future[String]]
 
-val futureOfOption: Future[Option[String]] = optionOfFuture.dummed
+val futureOfOption: Future[Option[String]] = optionOfFuture.extractFuture
 ```
 
 ### for-comprehension

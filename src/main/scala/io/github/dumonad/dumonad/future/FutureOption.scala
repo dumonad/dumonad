@@ -26,11 +26,18 @@ case class FutureOption[T](value: Future[Option[T]]) {
   def foreach[T1](mapper: T => T1)(implicit executor: ExecutionContext): Unit = {
     value.onComplete(_.foreach(_.foreach(mapper)))
   }
+
+  def filter(p: T => Boolean)(implicit executor: ExecutionContext): FutureOption[T] = {
+    FutureOption(value.map(_.filter(p)))
+  }
+
+  def withFilter(p: T => Boolean)(implicit executor: ExecutionContext): FutureOption[T] = filter(p)
+
 }
 
 object FutureOption {
-  def apply[T:ClassTag](e: Option[T]): FutureOption[T] = {
-    require(!classTag[T].equals(classTag[Future[_]]), "You are trying to generate Future[Option[Future[T]] which increases the complexity. Use `dummed` method instead")
+  def apply[T: ClassTag](e: Option[T]): FutureOption[T] = {
+    require(!classTag[T].equals(classTag[Future[_]]), "You are trying to generate Future[Option[Future[T]] which increases the complexity. Use `extractFuture` method instead")
     this (Future.successful(e))
   }
 }
@@ -46,14 +53,14 @@ trait FutureOptionExtensions {
   }
 
   implicit class RichOptionFuture[T](extendee: Option[Future[T]]) {
-    def dummed(implicit executor: ExecutionContext): Future[Option[T]] =
+    def extractFuture(implicit executor: ExecutionContext): Future[Option[T]] =
       extendee match {
         case Some(r) => r.map(Some(_))
         case _ => Future.successful(None)
       }
   }
 
-  implicit class RichOption[T:ClassTag](extendee: Option[T]) {
+  implicit class RichOption[T: ClassTag](extendee: Option[T]) {
     def toFutureOption: FutureOption[T] = FutureOption(extendee)
   }
 }
