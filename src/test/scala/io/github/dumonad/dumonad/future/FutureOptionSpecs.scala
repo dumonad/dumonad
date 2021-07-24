@@ -64,11 +64,11 @@ class FutureOptionSpecs extends AsyncFlatSpec with Matchers {
   }
 
   "RichOptionFuture" should "convert a Some[Future] to Future[Some]" in {
-    Some(Future.successful("Happy")).dummed.map(_ shouldBe Some("Happy"))
+    Some(Future.successful("Happy")).extractFuture.map(_ shouldBe Some("Happy"))
   }
 
   it should "convert a None[Future] to Future[None]" in {
-    None.dummed.map(_ shouldBe None)
+    None.extractFuture.map(_ shouldBe None)
   }
 
 }

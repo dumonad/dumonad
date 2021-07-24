@@ -52,7 +52,7 @@ class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
   }
 
   "RichSeqFuture" should "convert a Seq[Future] to Future[Seq]" in {
-    Seq(Future.successful("Happy")).dummed.map(_ shouldBe Seq("Happy"))
+    Seq(Future.successful("Happy")).extractFuture.map(_ shouldBe Seq("Happy"))
   }
 
 

@@ -66,11 +66,11 @@ class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
   }
 
   "RichEitherFuture" should "convert a Right[Future] to Future[Right]" in {
-    Right(Future.successful("Happy")).dummed.map(_ shouldBe right)
+    Right(Future.successful("Happy")).extractFuture.map(_ shouldBe right)
   }
 
   it should "convert a Left[Future] to Future[Left]" in {
-    Left[String, Future[String]]("Sad").dummed.map(_ shouldBe left)
+    Left[String, Future[String]]("Sad").extractFuture.map(_ shouldBe left)
   }
 
   "RichEither" should "convert an either to FutureEither" in {
@@ -79,7 +79,7 @@ class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
   it should "generate error to wrap a Either[Future] with Future" in {
     intercept[Exception] {
       Right[String, Future[String]](Future.successful("Sad")).toFutureEither.value.map(_ shouldBe right)
-    }.getMessage shouldBe "requirement failed: You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `dummed` method instead"
+    }.getMessage shouldBe "requirement failed: You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `extractFuture` method instead"
   }
 
 }
