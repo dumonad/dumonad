@@ -16,7 +16,8 @@ class FutureOptionSpecs extends AsyncFlatSpec with Matchers {
   def futureOfNone: Future[Option[String]] = Future.successful(None)
 
   class MockedScope {
-    def mapper(param: String): Future[Option[String]] = Future.successful(Some(s"${param}2"))
+    def mapper(param: String): Future[Option[String]] =
+      Future.successful(Some(s"${param}2"))
   }
 
   "FutureOption" should "act well in a for-comprehension" in {
