@@ -7,7 +7,7 @@ trait FutureOptionExtensions {
     def dumap[T1](mapper: T => Future[Option[T1]])(implicit
         executor: ExecutionContext
     ): Future[Option[T1]] =
-      toFutureOption.flatMap(mapper)
+      toFutureOption.flatMap(mapper(_).toFutureOption).value
 
     def toFutureOption: FutureOption[T] = FutureOption(extendee)
 

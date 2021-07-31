@@ -6,15 +6,6 @@ import scala.reflect.{ClassTag, classTag}
 case class FutureOption[T](value: Future[Option[T]]) {
 
   def flatMap[T1](
-      mapper: T => Future[Option[T1]]
-  )(implicit executor: ExecutionContext): Future[Option[T1]] = {
-    value.flatMap {
-      case Some(r) => mapper(r)
-      case _       => Future.successful(None)
-    }
-  }
-
-  def flatMap[T1](
       mapper: T => FutureOption[T1]
   )(implicit executor: ExecutionContext): FutureOption[T1] = {
     val mappedResult = value.flatMap {

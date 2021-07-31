@@ -8,7 +8,7 @@ trait FutureSequenceExtensions {
     def dumap[T2](mapper: T => Future[Iterable[T2]])(implicit
         executor: ExecutionContext
     ): Future[Iterable[T2]] =
-      toFutureSequence.flatMap(mapper)
+      toFutureSequence.flatMap(mapper(_).toFutureSequence).value
 
     def toFutureSequence: FutureSequence[T] = FutureSequence(extendee)
 

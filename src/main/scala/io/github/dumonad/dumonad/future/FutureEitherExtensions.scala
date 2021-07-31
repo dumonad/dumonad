@@ -9,7 +9,7 @@ trait FutureEitherExtensions {
     def dumap[R1](mapper: R => Future[Either[L, R1]])(implicit
         executor: ExecutionContext
     ): Future[Either[L, R1]] =
-      toFutureEither.flatMap(mapper)
+      toFutureEither.flatMap(mapper(_).toFutureEither).value
 
     def toFutureEither: FutureEither[L, R] = FutureEither(extendee)
   }

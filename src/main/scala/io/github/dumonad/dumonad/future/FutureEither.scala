@@ -7,15 +7,6 @@ import scala.util.Either
 case class FutureEither[L, R](value: Future[Either[L, R]]) {
 
   def flatMap[R1](
-      mapper: R => Future[Either[L, R1]]
-  )(implicit executor: ExecutionContext): Future[Either[L, R1]] = {
-    value.flatMap {
-      case Right(r) => mapper(r)
-      case Left(l)  => Future.successful(Left[L, R1](l))
-    }
-  }
-
-  def flatMap[R1](
       mapper: R => FutureEither[L, R1]
   )(implicit executor: ExecutionContext): FutureEither[L, R1] = {
     val mappedResult = value.flatMap {

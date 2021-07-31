@@ -5,11 +5,6 @@ import scala.reflect.{ClassTag, classTag}
 
 case class FutureSequence[T](value: Future[Iterable[T]]) {
 
-  def flatMap[T1](mapper: T => Future[Iterable[T1]])(implicit
-      executor: ExecutionContext
-  ): Future[Iterable[T1]] =
-    value.flatMap(seq => Future.sequence(seq.map(mapper)).map(_.flatten))
-
   def flatMap[T1](
       mapper: T => FutureSequence[T1]
   )(implicit executor: ExecutionContext): FutureSequence[T1] = {
