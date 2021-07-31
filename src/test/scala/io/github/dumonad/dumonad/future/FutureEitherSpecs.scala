@@ -18,9 +18,9 @@ class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
   def futureOfLeft: Future[Either[String, String]] = Future.successful(left)
 
   class MockedScope {
-    def mapper(param: String): Future[Either[String, String]] = Future.successful(Right(s"${param}2"))
+    def mapper(param: String): Future[Either[String, String]] =
+      Future.successful(Right(s"${param}2"))
   }
-
 
   "FutureEither" should "act well in a for-comprehension" in {
     val spy = Mockito.spy(new MockedScope)
@@ -78,7 +78,9 @@ class FutureEitherSpecs extends AsyncFlatSpec with Matchers {
   }
   it should "generate error to wrap a Either[Future] with Future" in {
     intercept[Exception] {
-      Right[String, Future[String]](Future.successful("Sad")).toFutureEither.value.map(_ shouldBe right)
+      Right[String, Future[String]](
+        Future.successful("Sad")
+      ).toFutureEither.value.map(_ shouldBe right)
     }.getMessage shouldBe "requirement failed: You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `extractFuture` method instead"
   }
 

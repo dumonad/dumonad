@@ -11,11 +11,12 @@ import scala.concurrent.Future
 
 class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
   class MockedScope {
-    def mapper(param: String): Future[Seq[String]] = Future.successful(Seq(s"${param}1", s"${param}2"))
+    def mapper(param: String): Future[Seq[String]] =
+      Future.successful(Seq(s"${param}1", s"${param}2"))
   }
 
-  def futureOfSeq: Future[Seq[String]] = Future.successful(Seq("Happy", "Thrilled"))
-
+  def futureOfSeq: Future[Seq[String]] =
+    Future.successful(Seq("Happy", "Thrilled"))
 
   "FutureSequence" should "act well in a for-comprehension" in {
     val spy = Mockito.spy(new MockedScope)
@@ -43,11 +44,10 @@ class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
 
     comprehensionResult.value.map { r =>
       verify(spy).mapper("Happy")
-      verify(spy,times(0)).mapper("Thrilled")
+      verify(spy, times(0)).mapper("Thrilled")
       r shouldBe Seq("Happy1", "Happy2")
     }
   }
-
 
   "RichFutureSeq" should "map Seq" in {
 
@@ -71,6 +71,5 @@ class FutureSequenceSpecs extends AsyncFlatSpec with Matchers {
   "RichSeqFuture" should "convert a Seq[Future] to Future[Seq]" in {
     Seq(Future.successful("Happy")).extractFuture.map(_ shouldBe Seq("Happy"))
   }
-
 
 }
