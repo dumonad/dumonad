@@ -5,8 +5,10 @@ import io.github.dumonad.dumonad.future.{
   FutureOptionExtensions,
   FutureSequenceExtensions
 }
+import io.github.dumonad.dumonad.seq.SequenceEitherExtensions
 
 object Implicits
     extends FutureOptionExtensions
     with FutureEitherExtensions
     with FutureSequenceExtensions
+    with SequenceEitherExtensions
