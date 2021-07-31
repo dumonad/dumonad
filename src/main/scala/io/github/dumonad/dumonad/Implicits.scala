@@ -5,6 +5,7 @@ import io.github.dumonad.dumonad.future.{
   FutureOptionExtensions,
   FutureSequenceExtensions
 }
+import io.github.dumonad.dumonad.option.OptionExtensions
 import io.github.dumonad.dumonad.seq.SequenceEitherExtensions
 
 object Implicits
@@ -12,3 +13,4 @@ object Implicits
     with FutureEitherExtensions
     with FutureSequenceExtensions
     with SequenceEitherExtensions
+    with OptionExtensions

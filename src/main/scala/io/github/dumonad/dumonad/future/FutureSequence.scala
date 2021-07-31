@@ -5,7 +5,7 @@ import scala.reflect.{ClassTag, classTag}
 
 case class FutureSequence[T](value: Future[Iterable[T]]) {
 
-  def rawFlatMap[T1](mapper: T => Future[Iterable[T1]])(implicit
+  def flatMap[T1](mapper: T => Future[Iterable[T1]])(implicit
       executor: ExecutionContext
   ): Future[Iterable[T1]] =
     value.flatMap(seq => Future.sequence(seq.map(mapper)).map(_.flatten))
@@ -13,9 +13,8 @@ case class FutureSequence[T](value: Future[Iterable[T]]) {
   def flatMap[T1](
       mapper: T => FutureSequence[T1]
   )(implicit executor: ExecutionContext): FutureSequence[T1] = {
-    val mappedResult = value.flatMap(seq =>
-      Future.sequence(seq.map(mapper).map(_.value)).map(_.flatten)
-    )
+    val mappedResult =
+      value.flatMap(seq => Future.sequence(seq.map(mapper).map(_.value)).map(_.flatten))
     FutureSequence(mappedResult)
   }
 
@@ -49,28 +48,5 @@ object FutureSequence {
       "You are trying to generate Future[Iterable[Future[T]] which increases the complexity. Use `extractFuture` method instead"
     )
     this(Future.successful(e))
-  }
-}
-
-trait FutureSequenceExtensions {
-  implicit class RichFutureSequence[T](extendee: Future[Iterable[T]]) {
-    def dumap[T2](mapper: T => Future[Iterable[T2]])(implicit
-        executor: ExecutionContext
-    ): Future[Iterable[T2]] =
-      toFutureSequence.rawFlatMap(mapper)
-
-    def toFutureSequence: FutureSequence[T] = FutureSequence(extendee)
-
-  }
-
-  implicit class RichSequenceFuture[T](extendee: Iterable[Future[T]]) {
-    def extractFuture(implicit
-        executor: ExecutionContext
-    ): Future[Iterable[T]] =
-      Future.sequence(extendee)
-  }
-
-  implicit class RichSequence[T: ClassTag](extendee: Iterable[T]) {
-    def toFutureSequence: FutureSequence[T] = FutureSequence(extendee)
   }
 }

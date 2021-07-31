@@ -6,7 +6,7 @@ import scala.util.Either
 
 case class FutureEither[L, R](value: Future[Either[L, R]]) {
 
-  def rawFlatMap[R1](
+  def flatMap[R1](
       mapper: R => Future[Either[L, R1]]
   )(implicit executor: ExecutionContext): Future[Either[L, R1]] = {
     value.flatMap {
@@ -59,31 +59,5 @@ object FutureEither {
       "You are trying to generate Future[Either[L,Future[R]] which increases the complexity. Use `extractFuture` method instead"
     )
     this(Future.successful(e))
-  }
-}
-
-trait FutureEitherExtensions {
-  implicit class RichFutureEither[L, R](extendee: Future[Either[L, R]]) {
-    def dumap[R1](mapper: R => Future[Either[L, R1]])(implicit
-        executor: ExecutionContext
-    ): Future[Either[L, R1]] =
-      toFutureEither.rawFlatMap(mapper)
-
-    def toFutureEither: FutureEither[L, R] = FutureEither(extendee)
-  }
-
-  implicit class RichEitherFuture[L, R](extendee: Either[L, Future[R]]) {
-    def extractFuture(implicit
-        executor: ExecutionContext
-    ): Future[Either[L, R]] =
-      extendee match {
-        case Right(r) => r.map(Right(_))
-        case Left(l)  => Future.successful(Left(l))
-      }
-
-  }
-
-  implicit class RichEither[L, R: ClassTag](extendee: Either[L, R]) {
-    def toFutureEither: FutureEither[L, R] = FutureEither(extendee)
   }
 }
